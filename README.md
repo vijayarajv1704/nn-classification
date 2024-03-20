@@ -14,7 +14,7 @@ You are required to help the manager to predict the right group of the new custo
 
 ## Neural Network Model
 
-![image](https://github.com/vijayarajv1704/nn-classification/assets/121303741/d1ce99ef-12f0-425b-88a7-70ac1b9076ff)
+![image](https://github.com/vinushcv/nn-classification/assets/113975318/95b22092-d6a4-41ac-8429-bf959435743e)
 
 
 ## DESIGN STEPS
@@ -29,213 +29,219 @@ Load and read the dataset.
 Perform pre processing and clean the dataset.
 
 ### STEP 4:
-Encode categorical value into numerical values using ordinal/label/one hot encoding.
+Normalize the values and split the values for x and y.
 
 ### STEP 5:
-Visualize the data using different plots in seaborn.
+Build the deep learning model with appropriate layers and depth.
+
+### STEP 6:
+Plot a graph for Training Loss, Validation Loss Vs Iteration & for Accuracy, Validation Accuracy vs Iteration.
+
+### STEP 7:
+Save the model using pickle.
+
+### STEP 8:
+Using the DL model predict for some random inputs.
 
 ## PROGRAM
 
-### Name: VIJAYARAJ V
+### Name: vijayaraj v
 ### Register Number: 212222230174
 
-```py
+```python
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from tensorflow.keras.models import Sequential
 from tensorflow.keras.models import load_model
-import pickle
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import Dropout
-from tensorflow.keras.layers import BatchNormalization
-import tensorflow as tf
-import seaborn as sns
-from tensorflow.keras.callbacks import EarlyStopping
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import LabelEncoder
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OrdinalEncoder
-from sklearn.metrics import classification_report,confusion_matrix
+import seaborn as sns
 import numpy as np
-import matplotlib.pylab as plt
+import matplotlib.pyplot as plt
+from sklearn.metrics import classification_report,confusion_matrix
 
-df = pd.read_csv('/customers.csv')
-df.head()
+df=pd.read_csv("customers.csv")
+
+
 df.columns
-df.dtypes
+
 df.shape
+
+df.dtypes
+
 df.isnull().sum()
+
 df_cleaned=df.dropna(axis=0)
+
 df_cleaned.isnull().sum()
+
 df_cleaned.shape
+
 df_cleaned.dtypes
-df_cleaned['Gender'].unique()
-df_cleaned['Ever_Married'].unique()
-df_cleaned['Graduated'].unique()
-df_cleaned['Family_Size'].unique()
-df_cleaned['Var_1'].unique()
-df_cleaned['Spending_Score'].unique()
-df_cleaned['Profession'].unique()
-df_cleaned['Segmentation'].unique()
 
-from sklearn.preprocessing import OrdinalEncoder
-from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import OneHotEncoder
+df_cleaned["Gender"].unique()
 
-categories_list=[['Male','Female'],
-                 ['No','Yes'],
-                 ['No','Yes'],
-                 ['Healthcare', 'Engineer', 'Lawyer', 'Artist', 'Doctor',
-                 'Homemaker', 'Entertainment', 'Marketing', 'Executive'],
-                 ['Low','Average','High']
-                 ]
-enc = OrdinalEncoder(categories = categories_list)
+df_cleaned["Ever_Married"].unique()
 
-cust_1=df_cleaned.copy()
-cust_1[['Gender','Ever_Married','Graduated','Profession','Spending_Score']]=enc.fit_transform(cust_1[['Gender','Ever_Married','Graduated','Profession','Spending_Score']])
+df_cleaned["Graduated"].unique()
 
-cust_1.dtypes
+df_cleaned["Profession"].unique()
 
+df_cleaned["Spending_Score"].unique()
 
-le = LabelEncoder()
-     
+df_cleaned["Segmentation"].unique()
 
-cust_1['Segmentation'] = le.fit_transform(cust_1['Segmentation'])
-     
+c_list=[['Male', 'Female'],
+           ['No', 'Yes'],
+           ['No', 'Yes'],
+           ['Healthcare', 'Engineer', 'Lawyer', 'Artist', 'Doctor',
+            'Homemaker', 'Entertainment', 'Marketing', 'Executive'],
+           ['Low', 'Average', 'High']
+           ]
 
-cust_1.dtypes
-     
+enc=OrdinalEncoder(categories=c_list)
 
-cust_1 = cust_1.drop('ID',axis=1)
-cust_1 = cust_1.drop('Var_1',axis=1)
-     
+customer1=df_cleaned.copy()
 
-cust_1.dtypes
-     
+customer1[['Gender','Ever_Married','Graduated','Profession','Spending_Score']] = enc.fit_transform(customer1[['Gender','Ever_Married','Graduated','Profession','Spending_Score']])
 
-# Calculate the correlation matrix
-corr = cust_1.corr()
+customer1.dtypes
 
-# Plot the heatmap
-sns.heatmap(corr, 
-        xticklabels=corr.columns,
-        yticklabels=corr.columns,
-        cmap="BuPu",
-        annot= True)
+le=LabelEncoder()
 
-sns.pairplot(cust_1)
+customer1["Segmentation"]=le.fit_transform(customer1["Segmentation"])
 
-cust_1.describe()
-cust_1['Segmentation'].unique()
+customer1.dtypes
 
-X=cust_1[['Gender','Ever_Married','Age','Graduated','Profession','Work_Experience','Spending_Score','Family_Size']].values
+customer1.describe()
 
-y1 = cust_1[['Segmentation']].values
-one_hot_enc = OneHotEncoder()
-one_hot_enc.fit(y1)
+x=customer1[['Gender','Ever_Married','Age','Graduated','Profession','Work_Experience','Spending_Score','Family_Size']].values
+
+y1=customer1[["Segmentation"]].values
+
+ohe=OneHotEncoder()
+
+ohe.fit(y1)
+
 y1.shape
-y = one_hot_enc.transform(y1).toarray() 
-y.shape    
+
+y=ohe.transform(y1).toarray()
+
+y.shape
+
 y1[0]
+
 y[0]
-X.shape
-X_train,X_test,y_train,y_test=train_test_split(X,y,
-                                               test_size=0.33,
-                                               random_state=50)
-X_train[0]
-X_train.shape
-scaler_age = MinMaxScaler()
-scaler_age.fit(X_train[:,2].reshape(-1,1))
-X_train_scaled = np.copy(X_train)
-X_test_scaled = np.copy(X_test)
 
-# To scale the Age column
-X_train_scaled[:,2] = scaler_age.transform(X_train[:,2].reshape(-1,1)).reshape(-1)
-X_test_scaled[:,2] = scaler_age.transform(X_test[:,2].reshape(-1,1)).reshape(-1)
+x.shape
 
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.33,random_state=50)
 
-# Creating the model
-AI=Sequential([
-    Dense(units=5,activation='relu',input_shape=[8]),
-    Dense(units=3,activation='relu'),
-    Dense(units=4,activation='relu'),
-    Dense(units=4,activation='softmax')
+x_train[0]
+
+x_train.shape
+
+scaler=MinMaxScaler()
+
+scaler.fit(x_train[:,2].reshape(-1,1))
+
+x_train_scaled=np.copy(x_train)
+
+x_test_scaled=np.copy(x_test)
+
+x_train_scaled[:,2] = scaler.transform(x_train[:,2].reshape(-1,1)).reshape(-1)
+x_test_scaled[:,2] = scaler.transform(x_test[:,2].reshape(-1,1)).reshape(-1)
+
+ai_brain = Sequential([
+  Dense(8,input_shape=(8,)),
+  Dense(8,activation='relu'),
+  Dense(8,activation='relu'),
+  Dense(4,activation='softmax'),
 ])
 
-AI.compile(optimizer='adam',
+ai_brain.compile(optimizer='adam',
                  loss='categorical_crossentropy',
                  metrics=['accuracy'])
+
+from tensorflow.keras.callbacks import EarlyStopping
+
 early_stop = EarlyStopping(monitor='val_loss', patience=2)
 
-
-AI.fit(x=X_train_scaled,y=y_train,
-             epochs=2000,batch_size=256,
-             validation_data=(X_test_scaled,y_test),
+ai_brain.fit(x=x_train_scaled,y=y_train,
+             epochs=20,batch_size=25,
+             validation_data=(x_test_scaled,y_test),
              )
-metrics = pd.DataFrame(AI.history.history)
+
+metrics = pd.DataFrame(ai_brain.history.history)
 
 metrics.head()
+
 metrics[['loss','val_loss']].plot()
-x_test_predictions = np.argmax(AI.predict(X_test_scaled), axis=1)
+
+x_test_predictions = np.argmax(ai_brain.predict(x_test_scaled), axis=1)
+
 x_test_predictions.shape
+
 y_test_truevalue = np.argmax(y_test,axis=1)
+
 y_test_truevalue.shape
+
+
 print(confusion_matrix(y_test_truevalue,x_test_predictions))
+
 print(classification_report(y_test_truevalue,x_test_predictions))
-     
-# Saving the Model
-AI.save('customer_classification_model.h5')
 
-# Saving the data
+ai_brain.save('customer_classification_model.h5')
+
 with open('customer_data.pickle', 'wb') as fh:
-   pickle.dump([X_train_scaled,y_train,X_test_scaled,y_test,cust_1,df_cleaned,scaler_age,enc,one_hot_enc,le], fh)
-
-AI = load_model('customer_classification_model.h5')
-
-# Loading the data
+  ai_brain = load_model('customer_classification_model.h5')
 with open('customer_data.pickle', 'rb') as fh:
-   [X_train_scaled,y_train,X_test_scaled,y_test,customers_1,customer_df_cleaned,scaler_age,enc,one_hot_enc,le]=pickle.load(fh)
-     
-#Prediction for a single input
-x_single_prediction = np.argmax(AI.predict(X_test_scaled[1:2,:]), axis=1)
+  x_single_prediction = np.argmax(ai_brain.predict(x_test_scaled[1:2,:]), axis=1)
+
+
 print(x_single_prediction)
+
+
+
 print(le.inverse_transform(x_single_prediction))
+
+
+
 
 ```
 
 ## Dataset Information
 
-![image](https://github.com/vijayarajv1704/nn-classification/assets/121303741/ce094c0b-724a-446f-9fde-70aa48e0757a)
-
+![image](https://github.com/vinushcv/nn-classification/assets/113975318/1faba58b-218e-4239-9f07-43e732230fa7)
 
 
 ## OUTPUT
 ### Training Loss, Validation Loss Vs Iteration Plot
-![image](https://github.com/vijayarajv1704/nn-classification/assets/121303741/ebfff645-6865-4f0a-bc08-2429cff4dcfd)
 
+![image](https://github.com/vinushcv/nn-classification/assets/113975318/487e8acd-30c5-431b-9597-6f020a4a1455)
 
 
 ### Classification Report
-![image](https://github.com/vijayarajv1704/nn-classification/assets/121303741/46a6ec9a-2870-49c5-885b-c5f4b0376310)
 
+![image](https://github.com/vinushcv/nn-classification/assets/113975318/61ab97fe-ff3d-4f85-9794-d020e27b53ec)
 
 
 ### Confusion Matrix
-![image](https://github.com/vijayarajv1704/nn-classification/assets/121303741/e86166f4-ea8f-402d-9728-1eb52db38f5d)
 
+![image](https://github.com/vinushcv/nn-classification/assets/113975318/2ab74aac-fecb-421e-a44d-0ea601f37852)
 
 
 
 ### New Sample Data Prediction
-![image](https://github.com/vijayarajv1704/nn-classification/assets/121303741/a359bb82-92e1-4c4a-9538-89348427d715)
 
-
-![image](https://github.com/vijayarajv1704/nn-classification/assets/121303741/c6da5f33-3a80-42f1-a245-21698370751b)
-
-
-![image](https://github.com/vijayarajv1704/nn-classification/assets/121303741/29c95b2e-9dfa-438e-b2a5-ffbff167ab00)
-
+![image](https://github.com/vinushcv/nn-classification/assets/113975318/3a3b3aba-13a2-4b99-b120-f6def2a97b7d)
 
 
 ## RESULT
 A neural network classification model is developed for the given dataset.
+
+
